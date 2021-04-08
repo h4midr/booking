@@ -2,6 +2,7 @@ package models
 
 import (
 	"errors"
+	"strings"
 	"time"
 )
 
@@ -29,4 +30,20 @@ func (e *Epoch) ToTime() time.Time {
 	t := time.Now()
 	d := uint(*e)
 	return time.Date(t.Year(), t.Month(), t.Day(), 0, 0, 0, 0, time.Local).Add(time.Duration(d) * EpochDuration_Min * time.Minute)
+}
+
+// EpochFromTime get a time and retur the Epoch wich it's in [min-max]
+func EpochFromTime(strTime string) (e Epoch, err error) {
+	// for special case strTime == 24:00
+	if strings.HasPrefix(strTime, "24:") {
+		return Epoch((24 * 60) / int(EpochDuration_Min)), nil
+	}
+	// elseif the strTime was a good boy
+	t, err := time.Parse("15:04", strTime)
+	if err != nil {
+		return
+	}
+	totalMins := (t.Hour()*60 + t.Minute()) % (24 * 60)
+	e = Epoch(int(totalMins / int(EpochDuration_Min)))
+	return
 }

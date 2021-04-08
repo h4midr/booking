@@ -60,3 +60,48 @@ func TestEpoch(t *testing.T) {
 		})
 	}
 }
+func TestEpochFromTime(t *testing.T) {
+	type testCase struct {
+		value  string
+		expect models.Epoch
+		err    error
+	}
+	testCases := []testCase{
+		testCase{
+			"00:00",
+			0,
+			nil,
+		},
+		testCase{
+			"00:30",
+			1,
+			nil,
+		},
+		testCase{
+			"00:40",
+			1,
+			nil,
+		},
+		testCase{
+			"12:00",
+			24,
+			nil,
+		},
+		testCase{
+			"24:00",
+			48,
+			nil,
+		},
+	}
+	for _, v := range testCases {
+		t.Run(fmt.Sprintf("Epoch From Time %s", v.value), func(tt *testing.T) {
+			e, err := models.EpochFromTime(v.value)
+			if e != v.expect || err != v.err {
+				tt.Errorf("Expected %d,%v got %d,%v", v.expect, v.err, e, err)
+			} else {
+				tt.Logf("Equals to %d", e)
+			}
+
+		})
+	}
+}
