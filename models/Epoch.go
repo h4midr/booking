@@ -27,5 +27,6 @@ func (e *Epoch) ToDuration() time.Duration {
 func (e *Epoch) ToTime() time.Time {
 	// today
 	t := time.Now()
-	return time.Date(t.Year(), t.Month(), t.Day(), 0, 0, 0, 0, time.Local)
+	d := uint(*e)
+	return time.Date(t.Year(), t.Month(), t.Day(), 0, 0, 0, 0, time.Local).Add(time.Duration(d) * EpochDuration_Min * time.Minute)
 }
