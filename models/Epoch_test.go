@@ -8,7 +8,7 @@ import (
 	"github.com/h4midr/booking/models"
 )
 
-func TestSession(t *testing.T) {
+func TestEpoch(t *testing.T) {
 	type testCase struct {
 		value  uint
 		expect time.Time
