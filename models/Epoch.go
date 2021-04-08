@@ -33,10 +33,10 @@ func (e *Epoch) ToTime() time.Time {
 }
 
 // EpochFromTime get a time and retur the Epoch wich it's in [min-max]
-func EpochFromTime(strTime string) (e Epoch, err error) {
+func EpochFromTime(strTime string) (e Epoch, err error, fixed bool) {
 	// for special case strTime == 24:00
 	if strings.HasPrefix(strTime, "24:") {
-		return Epoch((24 * 60) / int(EpochDuration_Min)), nil
+		return Epoch((24 * 60) / int(EpochDuration_Min)), nil, true
 	}
 	// elseif the strTime was a good boy
 	t, err := time.Parse("15:04", strTime)
@@ -45,5 +45,8 @@ func EpochFromTime(strTime string) (e Epoch, err error) {
 	}
 	totalMins := (t.Hour()*60 + t.Minute()) % (24 * 60)
 	e = Epoch(int(totalMins / int(EpochDuration_Min)))
+	if (totalMins % EpochDuration_Min) == 0 {
+		fixed = true
+	}
 	return
 }
