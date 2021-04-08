@@ -11,7 +11,7 @@ func TestSession(t *testing.T) {
 		expect time.Time
 		err    error
 	}
-	now := time.Now()
-	Today := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, time.Local)
+	// now := time.Now()
+	// Today := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, time.Local)
 
 }
