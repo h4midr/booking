@@ -2,7 +2,9 @@ package models_test
 
 import (
 	"fmt"
+	"math/rand"
 	"testing"
+	"time"
 
 	"github.com/h4midr/booking/models"
 )
@@ -77,4 +79,57 @@ func TestOffice(t *testing.T) {
 		})
 	}
 
+}
+
+func BenchmarkOfficeBooking(b *testing.B) {
+	o, err := models.NewOffice("7:30", "22:00")
+	if err != nil {
+		b.Error(err)
+	}
+	rand.Seed(time.Now().UnixNano())
+	sucsessBook := 0
+	sucsessUnBook := 0
+	b.RunParallel(func(pb *testing.PB) {
+
+		for pb.Next() {
+			ses, err := models.NewSession(fmt.Sprintf("%d:%d", rand.Intn(24), rand.Intn(60)), fmt.Sprintf("%d:%d", rand.Intn(24), rand.Intn(60)))
+			if !isAllowedError(err) {
+				b.Error(err)
+				continue
+			}
+			s, err := o.Book(ses)
+			if !isAllowedError(err) {
+				b.Error(err)
+				continue
+			}
+			if err == nil {
+				sucsessBook++
+				err = o.UnBook(s.ID)
+				if err != nil {
+					b.Error(err)
+					continue
+				} else {
+					sucsessUnBook++
+				}
+			}
+
+		}
+	})
+	b.Logf("Made %d sucsessfull Book and %d sucsessfull UnBook", sucsessBook, sucsessUnBook)
+}
+
+func isAllowedError(err error) bool {
+	switch err {
+	case
+		nil,
+		models.ErrorBlockAllocation,
+		models.ErrorEpochReservedBefore,
+		models.ErrorInvalidEpoch,
+		models.ErrorInvalidOfficeHours,
+		models.ErrorOfficeClosed,
+		models.ErrorOfficeNotOpendYet:
+		return true
+	default:
+		return false
+	}
 }
