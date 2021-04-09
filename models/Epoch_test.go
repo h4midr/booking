@@ -95,7 +95,7 @@ func TestEpochFromTime(t *testing.T) {
 	}
 	for _, v := range testCases {
 		t.Run(fmt.Sprintf("Epoch From Time %s", v.value), func(tt *testing.T) {
-			e, err := models.EpochFromTime(v.value)
+			e, err, _ := models.EpochFromTime(v.value)
 			if e != v.expect || err != v.err {
 				tt.Errorf("Expected %d,%v got %d,%v", v.expect, v.err, e, err)
 			} else {
