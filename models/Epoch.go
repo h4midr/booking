@@ -39,7 +39,7 @@ func EpochFromTime(strTime string) (e Epoch, err error, fixed bool) {
 		return Epoch((24 * 60) / int(EpochDuration_Min)), nil, true
 	}
 	// elseif the strTime was a good boy
-	t, err := time.Parse("15:04", strTime)
+	t, err := time.Parse("15:4", strTime)
 	if err != nil {
 		return
 	}
