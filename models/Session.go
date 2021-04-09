@@ -2,8 +2,9 @@ package models
 
 import (
 	"errors"
-
 	"time"
+
+	uuid "github.com/satori/go.uuid"
 )
 
 var (
@@ -18,10 +19,8 @@ type Session struct {
 }
 
 func newSession(ses Session) *Session {
-	// Uidv4 := "uuid.NewUUID" // TODO add uuid.v4
-
 	return &Session{
-		ID:        "UUID",
+		ID:        uuid.NewV4().String(),
 		StartDate: ses.StartDate,
 		EndDate:   ses.EndDate,
 	}
