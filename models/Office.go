@@ -17,7 +17,7 @@ var (
 
 type Office interface {
 	Book(ses Session) (*Session, error)
-	IsBookable(Session) bool
+	IsBookable(Session) (bool, error)
 	UnBook(BookID string) error
 }
 
@@ -60,21 +60,35 @@ type office struct {
 	Sessions   map[string]*Session
 }
 
-func (o *office) IsBookable(ses Session) bool {
+func (o *office) IsBookable(ses Session) (bool, error) {
 	eps := ses.Epochs()
+
+	if len(eps) < 1 {
+		// Session is not bookable
+		return false, ErrorInvalidEpoch
+	}
+
+	if o.OpenEpoch.ToTime().After(eps[0].ToTime()) {
+		// Session is before the office opens
+		return false, ErrorOfficeNotOpendYet
+	}
+	if o.CloseEpoch.ToTime().Before(eps[len(eps)-1].ToTime()) {
+		// session is after office closed
+		return false, ErrorOfficeClosed
+	}
 	// isbookable = true;
 	for _, v := range eps {
 		if o.Epochs[v-o.OpenEpoch] != "" {
 			// the session reserved by o.Epochs[v-o.OpenEpoch] SessionKey
-			return false
+			return false, ErrorEpochReservedBefore
 		}
 	}
-	return true
+	return true, nil
 }
 
 func (o *office) Book(ses Session) (*Session, error) {
-	if !o.IsBookable(ses) {
-		return nil, ErrorEpochReservedBefore
+	if ok, err := o.IsBookable(ses); !ok {
+		return nil, err
 	}
 
 	s := newSession(ses)
