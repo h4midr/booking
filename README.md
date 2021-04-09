@@ -15,3 +15,14 @@ A Meeting room booking application for an office is to be developed. Office open
 * be developable if the epoch changed
 * cuncurency 
 * consistency
+
+
+
+RUN 
+```
+cd models
+go test .
+go test . -race
+
+go test -bench . -benchtime 10000x
+```
